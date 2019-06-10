@@ -1,0 +1,20 @@
+package pa5Client;
+
+import java.util.Scanner;
+
+public class fromServer extends Thread{
+	Scanner sc = null;
+	
+	// read and print data from the input stream
+	public void run() {
+		while(sc.hasNextLine()) {
+			System.out.println(sc.nextLine());
+		}
+		sc.close();
+	}
+	
+	// set the scanner to the input stream
+	public void setScanner(Scanner sc) {
+		this.sc = sc;
+	}
+}
