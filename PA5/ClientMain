@@ -1,0 +1,26 @@
+// this client can be run multiple times to connect to the server listening on port 1221
+package pa5Client;
+import java.io.PrintWriter;
+import java.net.*;
+import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		try {
+			toServer ts = new toServer(); // create the object for starting the thread sending output to the server
+			fromServer fs = new fromServer(); // create the object for starting the thread taking input from the server
+			Socket otherSocket = new Socket("localhost", 1221); // connect to the local port 1221
+			Scanner fromOther = new Scanner(otherSocket.getInputStream()); // construct the scanner for reading the input from the socket
+			PrintWriter toOther = new PrintWriter(otherSocket.getOutputStream()); // construct the printwriter for writing input to the socket
+			fs.setScanner(fromOther); // set the scanner for reading the input from the server
+			ts.setPrint(toOther); // set the printwriter for writing input to the server
+			fs.start(); // start the thread that receives messages from the server
+			ts.start(); // start the thread that sends messages to the server
+		} catch(Exception e) {
+			System.out.println("Error: " + e);
+			return;
+		}
+	}
+
+}
