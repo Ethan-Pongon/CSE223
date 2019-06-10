@@ -1,0 +1,21 @@
+package pa5Client;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+public class toServer extends Thread{
+	PrintWriter pw = null;
+	
+	// read messages from system.in and print them to the output stream
+	public void run() {
+		Scanner sc = new Scanner(System.in);
+		while(sc.hasNextLine()) {
+			pw.println(sc.nextLine());
+			pw.flush();
+		}
+	}
+	
+	// set the printwriter to the output stream
+	public void setPrint(PrintWriter pw) {
+		this.pw = pw;
+	}
+}
