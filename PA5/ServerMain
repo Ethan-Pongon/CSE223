@@ -1,0 +1,59 @@
+/*
+ Ethan Pongon
+ 6/9/2019
+ CSE 223
+ PA5
+ The goal of this project is to create a chat client where messages can be sent back and forth between a server
+ and a user. Both the server and the user should be able to send multiple messages without having to wait for a reply
+ from the other and the server should continue running even after the client disconnects. After a disconnection the
+ server should be able to accept another connection from a client and start a new chat session.
+ */
+package pa5Server;
+import java.net.*;
+import java.util.Scanner;
+import java.io.*;
+
+public class Main {
+
+	public static void main(String[] args) {
+		ServerSocket ss = null;
+		Socket otherSocket = null;
+		Scanner fromOther = null;
+		PrintWriter toOther = null;
+		try {
+			// this loop allows the server to continue taking connections after a client disconnects
+			while(true) {
+				fromClient fc = new fromClient(); // create the object for starting the thread taking input from the client
+				toClient tc = new toClient(); // create the object for starting the thread sending output to the client
+				ss = new ServerSocket(1221); // set the ServerSocket to the port 1221
+				otherSocket = ss.accept(); // wait for someone to connect to the port
+				System.out.println("User has connected to the server");
+				fromOther = new Scanner(otherSocket.getInputStream()); // construct the scanner for reading the input from the socket
+				toOther = new PrintWriter(otherSocket.getOutputStream()); // construct the printwriter for writing input to the socket
+				fc.setScanner(fromOther); // set the scanner for reading the input from the server
+				tc.setPrint(toOther); // set the printwriter for writing input to the server
+				tc.start(); // start the thread that sends messages to the client
+				fc.start(); // start the thread that receives messages from the client
+				
+				// this loops checks to see if the thread receiving data from the client is still alive to determine if the connection is still being maintained
+				while(fc.isAlive()) {
+					try {
+						Thread.sleep(500);
+					} catch(Exception e) {
+						System.out.println("Error: e");
+					}
+				}
+				System.out.println("Connection has ended");
+				otherSocket.close();
+				ss.close();
+				otherSocket = null;
+				fc = null;
+				tc = null;
+			}
+		} catch(Exception e) {
+			System.out.println("Error: " + e);
+			return;
+		}
+	}
+
+}
